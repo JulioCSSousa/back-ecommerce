@@ -1,0 +1,28 @@
+{
+   "compilerOptions": {
+      "lib": [
+         "ESNext",
+         "ESNext.String"
+      ],
+      "target": "ESNext",
+      "module": "commonjs",
+      "moduleResolution": "node",
+      "outDir": "build",
+      "rootDir": "./src",
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "sourceMap": true,
+      "esModuleInterop": true,
+      "allowSyntheticDefaultImports": true,
+   },
+
+   "include": [
+      "src/**/*"
+    ],
+    "exclude": [
+      "src/node_modules",
+      "**/*.spec.ts",
+    ]
+  
+   
+}
