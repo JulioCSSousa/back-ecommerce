@@ -26,7 +26,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.server = exports.startServer = void 0;
+exports.server = void 0;
+exports.startServer = startServer;
 const data_source_1 = require("./data-source");
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
@@ -55,7 +56,6 @@ async function startServer() {
         console.error('Error connecting to the database:', error);
     }
 }
-exports.startServer = startServer;
 startServer();
 server.use(ProductRoutes_1.default);
 // Middleware para verificar a conexão com o banco

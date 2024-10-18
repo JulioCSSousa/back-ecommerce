@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.toProductDto = void 0;
+exports.toProductDto = toProductDto;
 const productDto_1 = require("../dtos/productDto");
 function toProductDto(product) {
     return product.map((product) => {
@@ -13,6 +13,5 @@ function toProductDto(product) {
         });
     });
 }
-exports.toProductDto = toProductDto;
 ;
 //# sourceMappingURL=toProductDto.js.map

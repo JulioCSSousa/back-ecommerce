@@ -9,9 +9,7 @@ dotenv.config();
 const server = express();
 const cors = require('cors');
 
-server.use(cors({
-  origin: 'http://localhost:5173' // Permite apenas esta origem
-}));
+server.use(cors());
 server.use(bodyParser.json());
 
 server.get('/', (_req, res) => res.status(200).json({
