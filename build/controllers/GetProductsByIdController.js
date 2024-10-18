@@ -6,8 +6,9 @@ const Product_1 = require("../entity/Product");
 class GetProductsByIdController {
     async getProductById(req, res) {
         const productRepository = data_source_1.AppDataSource.getRepository(Product_1.Product);
+        const id = req.params.id;
         const product = await productRepository.findOne({
-            where: { id: req.params.id },
+            where: { id: id },
         });
         if (!product) {
             return res.status(404).json({ message: 'Product not found' });

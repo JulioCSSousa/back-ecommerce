@@ -19,10 +19,10 @@ services:
   db:
     image: mysql:8.0.37
     environment:
-      MYSQL_ROOT_PASSWORD: ${LOCAL_PASS}
-      MYSQL_DATABASE: ${LOCAL_DB}
-      MYSQL_USER: ${LOCAL_USER}
-      MYSQL_PASSWORD: ${LOCAL_PASS}  
+      MYSQL_ROOT_PASSWORD: ${LOCAL_PASSWORD}
+      MYSQL_DATABASE: ${DB}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORDS}  
     ports:
       - "13331:13331"
     volumes:

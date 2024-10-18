@@ -31,11 +31,11 @@ const Product_1 = require("../entity/Product");
 dotenv.config();
 exports.AppDataSource = new typeorm_1.DataSource({
     type: "mysql",
-    host: process.env.LOCAL_HOST,
-    port: 3306,
-    username: process.env.LOCAL_USER,
-    password: process.env.LOCAL_PASSWORD,
-    database: process.env.LOCAL_DB,
+    host: process.env.DB_HOST,
+    port: parseInt(process.env.DB_HOST),
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB,
     synchronize: true,
     logging: false,
     entities: [Product_1.Product],
