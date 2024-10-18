@@ -2,12 +2,12 @@ import { AppDataSource } from "./data-source";
 import express from 'express';
 import bodyParser from 'body-parser';
 import productRoutes from '../shared/routes/ProductRoutes';
-import * as dotenv from "dotenv"
+import * as dotenv from "dotenv";
+import cors from 'cors';
 
 
 dotenv.config();
 const server = express();
-const cors = require('cors');
 
 server.use(cors());
 server.use(bodyParser.json());
