@@ -11,7 +11,7 @@ services:
       - DB_PORT=${DB_PORT}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
-      - DB=${DB}
+      - DB=${DB_PASSWORD}
 
     depends_on:
       - db
@@ -22,7 +22,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${LOCAL_PASSWORD}
       MYSQL_DATABASE: ${DB}
       MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASSWORD}  
+      MYSQL_PASSWORD: ${DB_PASSWORDS}  
     ports:
       - "13331:13331"
     volumes:
