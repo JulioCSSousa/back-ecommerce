@@ -16,7 +16,7 @@ export class Product {
   image?: string | null;
 
   @Column({ nullable: true })
-  price?: number;
+  price?: number; 
 
 }
 

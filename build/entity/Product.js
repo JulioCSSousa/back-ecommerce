@@ -18,7 +18,6 @@ let Product = class Product {
     image;
     price;
 };
-exports.Product = Product;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
     __metadata("design:type", String)
@@ -39,7 +38,8 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Number)
 ], Product.prototype, "price", void 0);
-exports.Product = Product = __decorate([
+Product = __decorate([
     (0, typeorm_1.Entity)()
 ], Product);
+exports.Product = Product;
 //# sourceMappingURL=Product.js.map

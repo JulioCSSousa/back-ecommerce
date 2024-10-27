@@ -31,9 +31,9 @@ export class GetProductsController {
         }
 
         const totalPages = Math.ceil(total / limit);
-
+        
         const result = toProductDto(product)
-        console.log(result)
+        
         return res.json({
             data: result,
 

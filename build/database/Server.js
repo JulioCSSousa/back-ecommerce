@@ -26,20 +26,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.server = void 0;
-exports.startServer = startServer;
+exports.server = exports.startServer = void 0;
 const data_source_1 = require("./data-source");
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const ProductRoutes_1 = __importDefault(require("../shared/routes/ProductRoutes"));
 const dotenv = __importStar(require("dotenv"));
+const cors_1 = __importDefault(require("cors"));
 dotenv.config();
 const server = (0, express_1.default)();
 exports.server = server;
-const cors = require('cors');
-server.use(cors({
-    origin: 'http://localhost:5173' // Permite apenas esta origem
-}));
+server.use((0, cors_1.default)());
 server.use(body_parser_1.default.json());
 server.get('/', (_req, res) => res.status(200).json({
     msg: "Welcome to menu-service"
@@ -56,10 +53,10 @@ async function startServer() {
         console.error('Error connecting to the database:', error);
     }
 }
+exports.startServer = startServer;
 startServer();
 server.use(ProductRoutes_1.default);
-// Middleware para verificar a conexão com o banco
-server.use((req, res, next) => {
+server.use((_, res, next) => {
     if (!data_source_1.AppDataSource.isInitialized) {
         return res.status(503).json({
             error: 'Service Unavailable: Unable to connect to the database. Contact support, please'

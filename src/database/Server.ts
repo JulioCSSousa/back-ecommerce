@@ -33,8 +33,7 @@ startServer()
 server.use(productRoutes);
 
 
-// Middleware para verificar a conexão com o banco
-server.use((req, res, next) => {
+server.use((_, res, next) => {
   if (!AppDataSource.isInitialized) {
     return res.status(503).json({
       error: 'Service Unavailable: Unable to connect to the database. Contact support, please'

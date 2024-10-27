@@ -23,8 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.productSchema = void 0;
-exports.productValidation = productValidation;
+exports.productValidation = exports.productSchema = void 0;
 const http_status_codes_1 = require("http-status-codes");
 const yup = __importStar(require("yup"));
 exports.productSchema = yup.object().shape({
@@ -48,4 +47,5 @@ async function productValidation(request, response, next) {
         });
     }
 }
+exports.productValidation = productValidation;
 //# sourceMappingURL=productValidation.js.map
