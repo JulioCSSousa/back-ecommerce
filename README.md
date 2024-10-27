@@ -36,11 +36,11 @@ Descrição
 Retorna os detalhes de um produto específico.
 Parâmetros de Rota
 
-    id (inteiro, obrigatório): ID do produto.
+    id (string, obrigatório): ID do produto.
 
 Exemplo de Requisição
 
-http
+https
 
 GET /api/products/17fed31f-b07b-44d1-9963-41ff2d13e950
 
@@ -79,7 +79,7 @@ Descrição
 Atualiza as informações de um produto existente.
 Parâmetros de Rota
 
-    id (inteiro, obrigatório): ID do produto.
+    id (string, obrigatório): ID do produto.
 
 Cabeçalhos
 
@@ -110,7 +110,7 @@ Descrição
 Remove um produto do sistema.
 Parâmetros de Rota
 
-    id (inteiro, obrigatório): ID do produto.
+    id (string, obrigatório): ID do produto.
 
 Exemplo de Requisição
 
