@@ -1,6 +1,8 @@
 Endpoints
 1. Listar todos os produtos
 
+link https://back-ecommerce-wl58.onrender.com/api/products
+
 GET /api/products
 Descrição
 
