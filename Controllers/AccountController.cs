@@ -13,15 +13,18 @@ public class AccountController : Controller
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly ILogger _logger;
 
     public AccountController(UserManager<User> userManager, 
         SignInManager<User> signInManager, 
-        RoleManager<IdentityRole> roleManager
+        RoleManager<IdentityRole> roleManager,
+        ILogger logger 
         )
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _roleManager = roleManager;
+        _logger = logger;
 
     }
 
@@ -81,14 +84,17 @@ public class AccountController : Controller
         var user = await _userManager.FindByEmailAsync(model.Email);
         var roles = await _userManager.GetRolesAsync(user);
         var role = roles.ToList();
+        
+        _logger.LogInformation("Gerando token para o usuário: {UserName}", user.UserName);
+        _logger.LogInformation("Roles do usuário: {Roles}", string.Join(", ", roles));
         if (user == null)
         {
-            return BadRequest();
+            return BadRequest("User not Found");
         }
 
         if (roles == null)
         {
-            return BadRequest("Role n�o encontrado");
+            return BadRequest("Role not Found");
         }
 
         var result = await _signInManager.PasswordSignInAsync(
