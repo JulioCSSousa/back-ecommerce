@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using DotNetEnv;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace EcommerceApi
 {
@@ -22,7 +23,7 @@ namespace EcommerceApi
             var dbUser = Environment.GetEnvironmentVariable("DB_USER");
             var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
             var dbName = Environment.GetEnvironmentVariable("DB");
-
+            
             var connectionString = $"Server={dbHost};Port={dbPort};Database={dbName};User={dbUser};Password={dbPassword}";
 
             builder.Services.AddDbContext<AppDbContext>(options =>
@@ -36,7 +37,9 @@ namespace EcommerceApi
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<TokenService>();
-
+            builder.Services.AddDataProtection()
+            .PersistKeysToFileSystem(new DirectoryInfo("/var/aspnetcore/keys"))
+            .SetApplicationName("NomeDaSuaAplicacao");
 
 
             builder.Services.AddIdentity<User, IdentityRole>(options =>
@@ -69,7 +72,7 @@ namespace EcommerceApi
                 });
 
             var app = builder.Build();
-
+        
 
             using (var scope = app.Services.CreateScope())
             {
@@ -93,10 +96,12 @@ namespace EcommerceApi
 
             app.UseHttpsRedirection();
 
-            app.UseAuthentication(); // Coloque isso antes de app.UseAuthorization()
+            app.UseAuthentication(); 
             app.UseAuthorization();
 
-            app.MapControllers();
+            app.UseRouting(); 
+
+            
 
             app.Run();
         }
