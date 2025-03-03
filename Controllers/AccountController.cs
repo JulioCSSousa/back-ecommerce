@@ -13,18 +13,15 @@ public class AccountController : Controller
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly RoleManager<IdentityRole> _roleManager;
-    private readonly ILogger _logger;
 
     public AccountController(UserManager<User> userManager, 
         SignInManager<User> signInManager, 
-        RoleManager<IdentityRole> roleManager,
-        ILogger logger 
+        RoleManager<IdentityRole> roleManager
         )
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _roleManager = roleManager;
-        _logger = logger;
 
     }
 
@@ -85,8 +82,6 @@ public class AccountController : Controller
         var roles = await _userManager.GetRolesAsync(user);
         var role = roles.ToList();
         
-        _logger.LogInformation("Gerando token para o usuário: {UserName}", user.UserName);
-        _logger.LogInformation("Roles do usuário: {Roles}", string.Join(", ", roles));
         if (user == null)
         {
             return BadRequest("User not Found");
@@ -100,7 +95,10 @@ public class AccountController : Controller
         var result = await _signInManager.PasswordSignInAsync(
                 model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
 
-            
+        if (!result.Succeeded){
+
+            return BadRequest("Invalid Password or Username");
+        }
         var token = tokenService.GenerateToken(user, roles);
 
         return Ok(new { token });
@@ -385,4 +383,4 @@ public async Task<IActionResult> PasswordReset(PasswordResetDto model)
         return RedirectToAction("Index"); // Retorna para a lista de usu�rios ou outra p�gina
     }
 
-}
+};

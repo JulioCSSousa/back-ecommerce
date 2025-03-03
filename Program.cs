@@ -1,4 +1,3 @@
-
 using appointmentApp.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +24,7 @@ namespace EcommerceApi
             var dbUser = Environment.GetEnvironmentVariable("DB_USER");
             var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
             var dbName = Environment.GetEnvironmentVariable("DB");
+            var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY");
             
             var connectionString = $"Server={dbHost};Port={dbPort};Database={dbName};User={dbUser};Password={dbPassword}";
 
@@ -39,6 +39,7 @@ namespace EcommerceApi
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<TokenService>();
+
             builder.Services.AddDataProtection()
             .SetApplicationName("EcommerceApi"); // Remove o persistência em arquivos
 
@@ -60,7 +61,10 @@ namespace EcommerceApi
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
-                    var jwtSecretKey = builder.Configuration.GetValue<string>("JwtSettings:Key");
+                    var jwtSecretKey = builder.Configuration.GetValue<string>($"Jwt:{jwtKey}");
+                    if(String.IsNullOrEmpty(jwtSecretKey)){
+                        throw new ArgumentException("jwtKey null or empty");
+                    }
                     options.RequireHttpsMetadata = true;
                     options.SaveToken = true;
                     options.TokenValidationParameters = new TokenValidationParameters
@@ -99,7 +103,6 @@ namespace EcommerceApi
             app.UseAuthentication(); 
             app.UseAuthorization();
             app.MapControllers();
-            
 
             app.Run();
         }

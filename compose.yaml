@@ -7,7 +7,7 @@ services:
       - "7069:7069"
     environment:
       - JWT_KEY=${JWT_KEY}
-      - DB_HOST=${DB_HOST}  # IP ou nome do domínio do servidor
+      - DB_HOST=${DB_HOST}  
       - DB_PORT=${DB_PORT}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}

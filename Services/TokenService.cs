@@ -26,7 +26,7 @@ public class TokenService
         // Adicionar roles ao token
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:JTW_KEY"]));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:JWT_KEY"]));
         if(key == null){
             throw new ArgumentNullException("null key");
         }
