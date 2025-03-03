@@ -40,8 +40,8 @@ namespace EcommerceApi
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<TokenService>();
             builder.Services.AddDataProtection()
-            .PersistKeysToFileSystem(new DirectoryInfo("/var/aspnetcore/keys"))
-            .SetApplicationName("NomeDaSuaAplicacao");
+            .SetApplicationName("EcommerceApi"); // Remove o persistência em arquivos
+
 
 
             builder.Services.AddIdentity<User, IdentityRole>(options =>
@@ -95,14 +95,10 @@ namespace EcommerceApi
                 app.UseSwaggerUI();
             }
 
-
-            app.UseHttpsRedirection();
-
+            app.UseRouting(); 
             app.UseAuthentication(); 
             app.UseAuthorization();
-
-            app.UseRouting(); 
-
+            app.MapControllers();
             
 
             app.Run();

@@ -11,6 +11,8 @@ FROM build AS publish
 RUN dotnet publish "EcommerceApi.csproj" -c Release -o /app/publish
 ENV ASPNETCORE_URLS=http://+:5000
 
+RUN mkdir -p /app/keys && chmod -R 777 /app/keys
+
 # Expõe a porta correta
 EXPOSE 5000
 # Etapa de runtime
