@@ -9,9 +9,13 @@ RUN dotnet build "EcommerceApi.csproj" -c Release -o /app/build
 # Etapa de publicação
 FROM build AS publish
 RUN dotnet publish "EcommerceApi.csproj" -c Release -o /app/publish
+ENV ASPNETCORE_URLS=http://+:5000
 
+# Expõe a porta correta
+EXPOSE 5000
 # Etapa de runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "EcommerceApi.dll"]
+

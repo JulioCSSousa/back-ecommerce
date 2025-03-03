@@ -17,6 +17,8 @@ namespace EcommerceApi
 
             
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.WebHost.UseUrls("http://+:5000");
             Env.Load();
             var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
             var dbPort = Environment.GetEnvironmentVariable("DB_PORT");
