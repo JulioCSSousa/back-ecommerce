@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8005:8000"
+      - "5112:5112"
     environment:
       - DB_HOST=${DB_HOST}  # IP ou nome do domínio do servidor
       - DB_PORT=${DB_PORT}
@@ -12,4 +12,17 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB=${DB}
 
-  # O serviço db foi removido, pois você está usando um banco de dados externo
+  db:
+    image: mysql:8.0.37
+    environment:
+      MYSQL_ROOT_PASSWORD: ${LOCAL_PASSWORD}
+      MYSQL_DATABASE: ${DB}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}  
+    ports:
+      - "13331:13331"
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:

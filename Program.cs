@@ -13,6 +13,8 @@ namespace EcommerceApi
     {
         public static async Task Main(string[] args)
         {
+
+            
             var builder = WebApplication.CreateBuilder(args);
             Env.Load();
             var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
