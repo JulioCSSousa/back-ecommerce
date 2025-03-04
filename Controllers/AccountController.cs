@@ -79,6 +79,9 @@ public class AccountController : Controller
     public async Task<IActionResult> Login(UserLoginDto model, [FromServices] TokenService tokenService)
     {
         var user = await _userManager.FindByEmailAsync(model.Email);
+        if (user == null){
+            return BadRequest("User not found");
+        }
         var roles = await _userManager.GetRolesAsync(user);
         var role = roles.ToList();
         
@@ -113,7 +116,7 @@ public class AccountController : Controller
         if (user == null)
         {
             // N�o expor se o e-mail est� correto ou n�o por motivos de seguran�a
-            return RedirectToAction("Login", "Account");
+            return NotFound("User not Found");
         }
 
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -134,7 +137,7 @@ public class AccountController : Controller
     {
         if (token == null || email == null)
         {
-            return BadRequest("Token inv�lido.");
+            return BadRequest("Invalid Token");
         }
 
         var model = new PasswordResetDto { Token = token, Email = email };
@@ -172,12 +175,12 @@ public async Task<IActionResult> PasswordReset(PasswordResetDto model)
     public async Task<IActionResult> GetUsers()
     {
         var users = _userManager.Users.ToList();
-        List<UserWithRolesDto> userWithRoles = new List<UserWithRolesDto>();
+        List<UserResponseDto> userWithRoles = new List<UserResponseDto>();
         foreach (var user in users)
         {
             var roles = await _userManager.GetRolesAsync(user);
             
-            userWithRoles.Add(new UserWithRolesDto
+            userWithRoles.Add(new UserResponseDto
                 {
                     Id = user.Id,
                     Name = user.Name,
@@ -213,9 +216,9 @@ public async Task<IActionResult> PasswordReset(PasswordResetDto model)
 
             var item = new UserResponseDto
             {
+                Id = user.Id.ToString(),
                 Name = user.Name,
-                UserName = user.UserName,
-                Email = user.Email,
+                Email = user.Email ?? throw new NullReferenceException("Email not Founded"),
                 PhoneNumber = user.PhoneNumber,
                 Role = roles.FirstOrDefault()
             };
@@ -223,8 +226,6 @@ public async Task<IActionResult> PasswordReset(PasswordResetDto model)
             usersWithRoles.Add(item);
 
         }
-
-
         return Ok(usersWithRoles);
     }
 
@@ -349,27 +350,27 @@ public async Task<IActionResult> PasswordReset(PasswordResetDto model)
     {
         if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(role))
         {
-            return BadRequest($"Usu�rio ou role inv�lidos.");
+            return BadRequest($"Invalid Role");
         }
 
         // Localiza o usu�rio pelo ID
         var user = await _userManager.FindByIdAsync(id);
         if (user == null)
         {
-            return NotFound("Usu�rio n�o encontrado.");
+            return NotFound("User not Found");
         }
 
         // Verifica se a role j� existe
         var roleExists = await _roleManager.RoleExistsAsync(role);
         if (!roleExists)
         {
-            return BadRequest("A role especificada n�o existe.");
+            return BadRequest("This role doesn't exits");
         }
         var currentRoles = await _userManager.GetRolesAsync(user);
         var removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
         if (!removeResult.Succeeded)
         {
-            return BadRequest("Erro ao remover roles antigas do usu�rio.");
+            return BadRequest("Erro to remove old role from the user");
         }
 
         // Adiciona a role ao usu�rio
@@ -377,7 +378,7 @@ public async Task<IActionResult> PasswordReset(PasswordResetDto model)
 
         if (!result.Succeeded)
         {
-            return BadRequest("Erro ao adicionar a role ao usu�rio.");
+            return BadRequest("Error to add a role to the user");
         }
 
         return RedirectToAction("Index"); // Retorna para a lista de usu�rios ou outra p�gina

@@ -28,7 +28,7 @@ public class ProductRepository : IProductRepository
 
     public async Task<IQueryable<Product>> GetAsync()
     {
-        return _context.Products;
+        return _context.Products.AsQueryable();
     }
 
     public async Task<Product> GetByIdAsync(Guid guid)

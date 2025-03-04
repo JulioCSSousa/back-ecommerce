@@ -20,14 +20,14 @@ public class TokenService
         var claims = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            new Claim(JwtRegisteredClaimNames.Email, user.Email ?? throw new NullReferenceException("No User Found")),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
         // Adicionar roles ao token
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:JWT_KEY"]));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:JWT_KEY"] ?? throw new NullReferenceException("Invalid Token")));
         if(String.IsNullOrEmpty(key.ToString())){
             throw new ArgumentNullException("null or empty key");
         }
