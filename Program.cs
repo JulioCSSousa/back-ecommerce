@@ -24,7 +24,7 @@ namespace EcommerceApi
             var dbUser = Environment.GetEnvironmentVariable("DB_USER");
             var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
             var dbName = Environment.GetEnvironmentVariable("DB");
-            var jwtKey = Environment.GetEnvironmentVariable("JwtSettings__Key");
+            var jwtKey = Environment.GetEnvironmentVariable("Jwt__JWT_KEY");
             
             var connectionString = $"Server={dbHost};Port={dbPort};Database={dbName};User={dbUser};Password={dbPassword}";
 
