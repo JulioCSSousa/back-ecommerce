@@ -24,7 +24,7 @@ namespace EcommerceApi
             var dbUser = Environment.GetEnvironmentVariable("DB_USER");
             var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
             var dbName = Environment.GetEnvironmentVariable("DB");
-            var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY");
+            var jwtKey = Environment.GetEnvironmentVariable("JwtSettings__Key");
             
             var connectionString = $"Server={dbHost};Port={dbPort};Database={dbName};User={dbUser};Password={dbPassword}";
 
@@ -61,9 +61,9 @@ namespace EcommerceApi
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
-                    var jwtSecretKey = builder.Configuration.GetValue<string>($"Jwt:{jwtKey}");
+                    var jwtSecretKey = builder.Configuration.GetValue<string>($"JwtSettings__Key:{jwtKey}");
                     if(String.IsNullOrEmpty(jwtSecretKey)){
-                        throw new ArgumentException("jwtKey null or empty");
+                        throw new ArgumentException("JwtSettings__Key null or empty");
                     }
                     options.RequireHttpsMetadata = true;
                     options.SaveToken = true;
