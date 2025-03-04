@@ -1,7 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using DotNetEnv;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -17,8 +16,7 @@ public class TokenService
 
     public string GenerateToken(IdentityUser user, IList<string> roles)
     {
-        Env.Load();
-            var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY");
+        
         var claims = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id),
@@ -29,9 +27,9 @@ public class TokenService
         // Adicionar roles ao token
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration[$"Jwt:{jwtKey}"]));
-        if(key == null){
-            throw new ArgumentNullException("null key");
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:JWT_KEY"]));
+        if(String.IsNullOrEmpty(key.ToString())){
+            throw new ArgumentNullException("null or empty key");
         }
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
