@@ -22,7 +22,7 @@ namespace EcommerceApi.Models.Dto.UserDto.Request
 
         [Required]
         [DataType(DataType.Password)]
-        [Compare("Password", ErrorMessage = "As senhas não conferem.")]
+        [Compare("Password", ErrorMessage = "The password do not match")]
         public string ConfirmPassword { get; set; }
 
     }

@@ -55,6 +55,11 @@ public class AccountController : Controller
             }
             else
             {
+                var userexists = await _userManager.FindByEmailAsync(model.Email);
+                if(userexists != null){
+                    return BadRequest("This user alread exists");
+                }
+
                 var user = new User(model.Name, model.Email, model.PhoneNumber)
                 {
                     UserName = model.Email,
@@ -76,36 +81,28 @@ public class AccountController : Controller
 
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(UserLoginDto model, [FromServices] TokenService tokenService)
+    public async Task<IActionResult> Login(UserLoginDto model, TokenService tokenService)
     {
         var user = await _userManager.FindByEmailAsync(model.Email);
-        if (user == null){
-            return BadRequest("User not found");
-        }
-        var roles = await _userManager.GetRolesAsync(user);
-        var role = roles.ToList();
-        
         if (user == null)
         {
-            return BadRequest("User not Found");
-        }
-
-        if (roles == null)
-        {
-            return BadRequest("Role not Found");
+            return Unauthorized("Invalid email or password");
         }
 
         var result = await _signInManager.PasswordSignInAsync(
-                model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+            user, model.Password, model.RememberMe, lockoutOnFailure: false);
 
-        if (!result.Succeeded){
-
-            return BadRequest("Invalid Password or Username");
+        if (!result.Succeeded)
+        {
+            return Unauthorized("Invalid email or password");
         }
+
+        var roles = await _userManager.GetRolesAsync(user);
         var token = tokenService.GenerateToken(user, roles);
 
         return Ok(new { token });
     }
+
 
     [HttpPost("password-recovery")]
     [AllowAnonymous]
