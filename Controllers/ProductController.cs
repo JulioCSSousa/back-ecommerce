@@ -42,16 +42,40 @@ public class ProductController : Controller
     }
     [HttpGet]
     public async Task<ActionResult> GetAsync(){
-        return Ok(await _productService.GetAsync());
+        var products = await _productService.GetAsync();
+        var productDto = new List<ProductDto>();
+        foreach (var product in products)
+        {
+            productDto.Add(new ProductDto 
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price,
+                Description = product.Description,
+                ImageUrl = product.ImageUrl
+            });
+            
+        }
+
+        return Ok(productDto);
     }
+
     [HttpGet("id")]
     public async Task<ActionResult> GetByIdAsync(Guid id){
         var product = await _productService.GetByIdAsync(id);
         if(product == null){
             return NotFound("Id not Exists");
         }
-        return Ok(product);
+        var productDto = new ProductDto{
+            Id = product.Id,
+            Name = product.Name,
+            Price = product.Price,
+            Description = product.Description,
+            ImageUrl = product.ImageUrl
+        };
+        return Ok(productDto);
     }
+
     [HttpPut]
     public async Task<ActionResult> Update(Guid id, ProductRequestDto productDto){
 
