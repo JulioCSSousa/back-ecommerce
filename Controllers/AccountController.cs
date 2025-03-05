@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 [ApiController]
 [Route("api/accounts")]
+
 public class AccountController : Controller
 {
     private readonly UserManager<User> _userManager;
@@ -28,6 +29,7 @@ public class AccountController : Controller
 
     // POST: /Account/Register
     [HttpPost("register")]
+    [AllowAnonymous]
     public async Task<IActionResult> Register(UserRegisterDto model)
     {
 
@@ -81,9 +83,11 @@ public class AccountController : Controller
 
 
     [HttpPost("login")]
+    [AllowAnonymous]
     public async Task<IActionResult> Login(UserLoginDto model, TokenService tokenService)
     {
         var user = await _userManager.FindByEmailAsync(model.Email);
+        System.Console.WriteLine(user.Id);
         if (user == null)
         {
             return Unauthorized("Invalid email or password");
@@ -106,7 +110,6 @@ public class AccountController : Controller
 
     [HttpPost("password-recovery")]
     [AllowAnonymous]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> PasswordRecovery([FromForm] string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
@@ -168,7 +171,6 @@ public async Task<IActionResult> PasswordReset(PasswordResetDto model)
   
 
     [HttpGet("get-users")]
-    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetUsers()
     {
         var users = _userManager.Users.ToList();
@@ -192,7 +194,6 @@ public async Task<IActionResult> PasswordReset(PasswordResetDto model)
     }
 
     [HttpGet("get-user/serachterms")]
-    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetUsers(string? searchTerm = null)
     {
         // Obter todos os usu�rios se o campo de buscar n�o for preenchido se n�o recuperar
@@ -226,23 +227,8 @@ public async Task<IActionResult> PasswordReset(PasswordResetDto model)
         return Ok(usersWithRoles);
     }
 
-    [HttpGet("{id}")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Update(string id)
-    {
-        var user = await _userManager.FindByIdAsync(id);
-        if (user == null)
-        {
-            return NotFound("Usu�rio n�o encontrado.");
-        }
-
-
-        return Ok(user); // Exibe a p�gina de atualiza��o com os dados do usu�rio
-    }
-
 
     [HttpPost("Update/{id}")]
-    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Update(string id, UserResponseDto model)
     {
         if (id != model.Id)
@@ -286,63 +272,59 @@ public async Task<IActionResult> PasswordReset(PasswordResetDto model)
 
 
     [HttpDelete("id")]
-    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(string id)
     {
         if (string.IsNullOrEmpty(id))
         {
-            return BadRequest("ID do usu�rio n�o pode ser nulo ou vazio.");
+            return BadRequest("Invalid Id");
         }
         
         var userFind = await _userManager.FindByIdAsync(id);
         if (userFind == null)
         {
-            return NotFound($"Usu�rio n�o encontrado. {id}");
+            return NotFound($"User not Found");
         }
 
         var result = await _userManager.DeleteAsync(userFind);
 
         if (result.Succeeded)
         {
-            TempData["SuccessMessage"] = "Usu�rio exclu�do com sucesso!";
-        }
-        else
-        {
-            TempData["ErrorMessage"] = "Erro ao excluir o usu�rio.";
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError("", error.Description);
-            }
+            return Ok("User successfully deleted");
         }
 
-        return Ok();
+        return BadRequest("Something wrong");
     }
 
 
     // POST: /Account/Logout
     [HttpPost("logout")]
-    [ValidateAntiForgeryToken]
+    [AllowAnonymous]
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();
-        return RedirectToAction("Login", "Account");
+        return Ok("Bye");
     }
 
     [HttpGet("roles")]
-    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetRole()
     {
-        var user = await _userManager.Users.ToListAsync();
-        if (user == null)
+        var users = await _userManager.Users.ToListAsync();
+        if (users == null)
         {
-            return BadRequest();
+            return BadRequest("No Users Yet");
         }
 
-        return View(user);
+        var roles = new List<Dictionary<string, string>>();
+        var userAndRoles = new Dictionary<string, string>();
+        foreach (var user in users){
+            var role = await _userManager.GetRolesAsync(user);
+            userAndRoles.Add(user.Name, role.FirstOrDefault() ?? "");
+            roles.Add(userAndRoles);
+        }
+        return Ok(userAndRoles);
     }
 
     [HttpPost("role")]
-    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> AddRole(string id , string role )
     {
         if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(role))
