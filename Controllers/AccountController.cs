@@ -31,55 +31,79 @@ public class AccountController : Controller
     [HttpPost("register")]
     [AllowAnonymous]
     public async Task<IActionResult> Register(UserRegisterDto model)
+{
+    // Verifique se já existe um usuário
+    var usersExist = await _userManager.Users.AnyAsync();
+    
+    // Se não houver nenhum usuário, cria um com o papel Admin
+    if (!usersExist)
     {
+        var user = new User(model.Name, model.Email, model.PhoneNumber)
+        {
+            UserName = model.Email,
+            Email = model.Email,
+            PhoneNumber = model.PhoneNumber
+        };
 
-
-            var users = await _userManager.Users.AnyAsync();
-
-            if (!users)
+        var result = await _userManager.CreateAsync(user, model.Password);
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
             {
-                var user = new User(model.Name, model.Email, model.PhoneNumber)
-                {
-                    UserName = model.Email
-                };
-                var result = await _userManager.CreateAsync(user, model.Password);
-                await _userManager.AddToRoleAsync(user, "Admin");
-                if (result.Succeeded)
-                {
-                    return Ok();
-
-                }
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
-
+                if (error.Code == "PasswordTooShort")
+                    return BadRequest("Password is too short");
+                ModelState.AddModelError(string.Empty, error.Description);
             }
-            else
-            {
-                var userexists = await _userManager.FindByEmailAsync(model.Email);
-                if(userexists != null){
-                    return BadRequest("This user alread exists");
-                }
-
-                var user = new User(model.Name, model.Email, model.PhoneNumber)
-                {
-                    UserName = model.Email,
-                    Email = model.Email,
-                    PhoneNumber = model.PhoneNumber
-                };
-                var result = await _userManager.CreateAsync(user, model.Password);
-                await _userManager.AddToRoleAsync(user, "Cliente");
-                if (result.Succeeded)
-                {
-                    return Ok();
-
-                }
-            
+            return BadRequest(ModelState);
         }
 
-        return Ok();
+        var roleResult = await _userManager.AddToRoleAsync(user, "Admin");
+        if (!roleResult.Succeeded)
+        {
+            return BadRequest("Failed to assign role to user.");
+        }
+
+        return Ok("User created and assigned 'Admin' role.");
     }
+    else
+    {
+        // Verifique se o usuário já existe com o e-mail fornecido
+        var userExists = await _userManager.FindByEmailAsync(model.Email);
+        if (userExists != null)
+        {
+            return BadRequest("This user already exists");
+        }
+
+        // Cria o usuário com o papel Cliente
+        var newUser = new User(model.Name, model.Email, model.PhoneNumber)
+        {
+            UserName = model.Email,
+            Email = model.Email,
+            PhoneNumber = model.PhoneNumber
+        };
+
+        var result = await _userManager.CreateAsync(newUser, model.Password);
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
+            {
+                if (error.Code == "PasswordTooShort")
+                    return BadRequest("Password is too short");
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+            return BadRequest(ModelState);
+        }
+
+        var roleResult = await _userManager.AddToRoleAsync(newUser, "Cliente");
+        if (!roleResult.Succeeded)
+        {
+            return BadRequest("Failed to assign role to user.");
+        }
+
+        return Ok("User created and assigned 'Cliente' role.");
+    }
+}
+
 
 
     [HttpPost("login")]

@@ -62,6 +62,10 @@ public class ProductController : Controller
 
     [HttpGet("id")]
     public async Task<ActionResult> GetByIdAsync(Guid id){
+        if(String.IsNullOrEmpty(id.ToString())){
+            return BadRequest("Id empty is inavlid");
+        }
+
         var product = await _productService.GetByIdAsync(id);
         if(product == null){
             return NotFound("Id not Exists");
@@ -73,6 +77,7 @@ public class ProductController : Controller
             Description = product.Description,
             ImageUrl = product.ImageUrl
         };
+        Console.WriteLine(productDto.Id);
         return Ok(productDto);
     }
 

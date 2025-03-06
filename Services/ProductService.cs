@@ -1,8 +1,4 @@
 
-
-
-using Microsoft.EntityFrameworkCore;
-
 public class ProductService : IProductService
 {
     private readonly IProductRepository _repository;
@@ -31,9 +27,9 @@ public class ProductService : IProductService
         return await _repository.GetAsync();
     }
 
-    public async Task<Product> GetByIdAsync(Guid guid)
+    public async Task<Product> GetByIdAsync(Guid id)
     {
-        return await _repository.GetByIdAsync(guid);
+        return await _repository.GetByIdAsync(id);
     }
 
     public  async Task Update(Product product)

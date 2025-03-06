@@ -31,9 +31,9 @@ public class ProductRepository : IProductRepository
         return _context.Products.AsQueryable();
     }
 
-    public async Task<Product> GetByIdAsync(Guid guid)
+    public async Task<Product> GetByIdAsync(Guid id)
     {
-        return await _context.Products.SingleOrDefaultAsync();
+        return await _context.Products.FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public  async Task Update(Product product)
