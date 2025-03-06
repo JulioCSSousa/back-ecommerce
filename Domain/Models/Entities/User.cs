@@ -6,6 +6,7 @@ namespace appointmentApp.Models.Entities
     public class User : IdentityUser
     {
         [Required]
+        [MaxLength(60)]
         public string Name { get; protected set; }
 
         protected User() { }

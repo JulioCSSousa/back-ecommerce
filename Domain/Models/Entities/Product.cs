@@ -2,14 +2,16 @@ using System.ComponentModel.DataAnnotations;
 
 public class Product
 {
-    public Guid Id { get; private set; }
+    public Guid Id { get; private set; } 
     [Required(ErrorMessage="Name is Required")]
-    public string Name { get; private set; }
-
-    public string? Description { get; private set; }
+    [MaxLength(100)]
+    public string Name { get; private set; } = "";
+    [MaxLength(300)]
+    public string? Description { get; private set;} = "";
     [Required(ErrorMessage = "Price is Required")]
-    public double Price { get; private set; }
-    public string? ImageUrl { get; private set; }
+    public double Price { get; private set; } = 0;
+    [MaxLength(600)]
+    public string? ImageUrl { get; private set; } = "";
 
     // Construtor privado para Entity Framework
     private Product() { }

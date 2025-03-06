@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 [Route("api/products")]
 public class ProductController : Controller
 {
-    private readonly IProductService _productService;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public ProductController(IProductService productService)
+    public ProductController(IUnitOfWork unitOfWork)
     {
-        _productService = productService;
+        _unitOfWork = unitOfWork;
     }
 
     [HttpPost]
@@ -34,15 +34,13 @@ public class ProductController : Controller
         model.Price,
         model.ImageUrl);
 
-        await _productService.Create(product);
+        await _unitOfWork.ProductRepository.Create(product);
         return Ok(product);
 
-
-       
     }
     [HttpGet]
     public async Task<ActionResult> GetAsync(){
-        var products = await _productService.GetAsync();
+        var products = await _unitOfWork.ProductRepository.GetAsync();
         var productDto = new List<ProductDto>();
         foreach (var product in products)
         {
@@ -66,7 +64,7 @@ public class ProductController : Controller
             return BadRequest("Id empty is inavlid");
         }
 
-        var product = await _productService.GetByIdAsync(id);
+        var product = await _unitOfWork.ProductRepository.GetByIdAsync(id);
         if(product == null){
             return NotFound("Id not Exists");
         }
@@ -87,7 +85,7 @@ public class ProductController : Controller
         if (String.IsNullOrEmpty(id.ToString())){
             return BadRequest("Product not exist");
         }
-        var dbproduct = await _productService.GetByIdAsync(id);
+        var dbproduct = await _unitOfWork.ProductRepository.GetByIdAsync(id);
         if (dbproduct == null)
         {
             return NotFound("Product not found");
@@ -114,17 +112,17 @@ public class ProductController : Controller
             dbproduct.SetImage(productDto.ImageUrl);
         }
 
-        await _productService.Update(dbproduct);
+        await _unitOfWork.ProductRepository.Update(dbproduct);
         return Ok();
     }
 
     [HttpDelete]
     public async Task<ActionResult> Delete(Guid id){
-        var product = await _productService.GetByIdAsync(id);
+        var product = await _unitOfWork.ProductRepository.GetByIdAsync(id);
         if(product == null){
             return NotFound("Id not Found");
         }
-        await _productService.Delete(product);
+        await _unitOfWork.ProductRepository.Delete(product);
         return Ok(product);
     }
 

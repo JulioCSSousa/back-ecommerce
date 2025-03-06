@@ -111,7 +111,6 @@ public class AccountController : Controller
     public async Task<IActionResult> Login(UserLoginDto model, TokenService tokenService)
     {
         var user = await _userManager.FindByEmailAsync(model.Email);
-        System.Console.WriteLine(user.Id);
         if (user == null)
         {
             return Unauthorized("Invalid email or password");
@@ -127,8 +126,15 @@ public class AccountController : Controller
 
         var roles = await _userManager.GetRolesAsync(user);
         var token = tokenService.GenerateToken(user, roles);
+        var logUser = new UserResponseDtoLogin
+        { 
+            Name = user.Name,
+            Email = model.Email,
+            Role = roles.FirstOrDefault(),
+            Token = token 
+        };
 
-        return Ok(new { token });
+        return Ok(logUser);
     }
 
 
