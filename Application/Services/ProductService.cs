@@ -22,14 +22,18 @@ public class ProductService : IProductService
         await _repository.Delete(product);
     }
 
-    public async Task<IEnumerable<Product>> GetAsync()
+    public async Task<IEnumerable<Product>> GetAsync(string? txt)
     {
-        return await _repository.GetAsync();
+        return await _repository.GetAsync(txt);
     }
 
     public async Task<Product> GetByIdAsync(Guid id)
     {
         return await _repository.GetByIdAsync(id);
+    }
+    public async Task<IEnumerable<Product>> GetByCategoryAsync(string? category)
+    {
+        return await _repository.GetByCategory(category);
     }
 
     public  async Task Update(Product product)

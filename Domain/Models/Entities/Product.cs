@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.InteropServices;
 
 public class Product
 {
@@ -12,18 +13,20 @@ public class Product
     public double Price { get; private set; } = 0;
     [MaxLength(600)]
     public string? ImageUrl { get; private set; } = "";
-
+    [MaxLength(60)]
+    public string? Category { get; private set; }
     // Construtor privado para Entity Framework
     private Product() { }
 
     // Construtor principal
-    public Product(string name, string? description, double price, string? imageUrl)
+    public Product(string name, string? description, double price, string? imageUrl, string? category)
     {
         Id = Guid.NewGuid(); 
         SetName(name);
         SetDescription(description);
         SetPrice(price);
         SetImage(imageUrl);
+        SetCategory(category);
     }
 
     public void SetName(string name)
@@ -58,5 +61,8 @@ public class Product
         SetDescription(description);
         SetPrice(price);
         SetImage(imageUrl);
+    }
+    public void SetCategory(string category){
+        Category = category;
     }
 }

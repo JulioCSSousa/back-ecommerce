@@ -32,15 +32,17 @@ public class ProductController : Controller
         model.Name,
         model.Description,
         model.Price,
-        model.ImageUrl);
+        model.ImageUrl,
+        model.Category
+        );
 
         await _unitOfWork.ProductRepository.Create(product);
         return Ok(product);
 
     }
     [HttpGet]
-    public async Task<ActionResult> GetAsync(){
-        var products = await _unitOfWork.ProductRepository.GetAsync();
+    public async Task<ActionResult> GetAsync(string? txt=null){
+        var products = await _unitOfWork.ProductRepository.GetAsync(txt);
         var productDto = new List<ProductDto>();
         foreach (var product in products)
         {
@@ -50,7 +52,29 @@ public class ProductController : Controller
                 Name = product.Name,
                 Price = product.Price,
                 Description = product.Description,
-                ImageUrl = product.ImageUrl
+                ImageUrl = product.ImageUrl,
+                Category = product.Category,
+            });
+            
+        }
+
+        return Ok(productDto);
+    }
+    [HttpGet("categories/")]
+    public async Task<ActionResult> GetByCategoryAsync(string? txt){
+        var products = await _unitOfWork.ProductRepository.GetByCategory(txt);
+        var productDto = new List<ProductDto>();
+        foreach (var product in products)
+        {
+            productDto.Add(new ProductDto 
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price,
+                Description = product.Description,
+                ImageUrl = product.ImageUrl,
+                Category = product.Category,
+                
             });
             
         }
@@ -73,7 +97,8 @@ public class ProductController : Controller
             Name = product.Name,
             Price = product.Price,
             Description = product.Description,
-            ImageUrl = product.ImageUrl
+            ImageUrl = product.ImageUrl,
+            Category = product.Category
         };
         Console.WriteLine(productDto.Id);
         return Ok(productDto);
@@ -110,6 +135,10 @@ public class ProductController : Controller
         if (!String.IsNullOrEmpty(productDto.ImageUrl))
         {
             dbproduct.SetImage(productDto.ImageUrl);
+        }
+        if (!String.IsNullOrEmpty(productDto.Category))
+        {
+            dbproduct.SetCategory(productDto.Category);
         }
 
         await _unitOfWork.ProductRepository.Update(dbproduct);
