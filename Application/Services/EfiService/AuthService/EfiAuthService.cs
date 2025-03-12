@@ -20,7 +20,8 @@ public class EfiAuthService
         }
 
         // Carrega o certificado com opções adicionais
-        var cert = new X509Certificate2(certPath, "", X509KeyStorageFlags.Exportable | X509KeyStorageFlags.MachineKeySet);
+        var cert = new X509Certificate2(certPath, (string?)null, X509KeyStorageFlags.Exportable | X509KeyStorageFlags.MachineKeySet);
+        System.Console.WriteLine(cert);
 
         var handler = new HttpClientHandler();
         handler.ClientCertificates.Add(cert);
