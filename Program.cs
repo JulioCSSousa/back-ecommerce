@@ -45,6 +45,9 @@ namespace EcommerceApi
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<TokenService>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddSingleton<EfiAuthService>();
+            builder.Services.AddHttpClient<EfiPixService>();
+            
 
             // Configuração de proteção de dados (sem persistência em arquivos)
             builder.Services.AddDataProtection()
@@ -94,7 +97,8 @@ namespace EcommerceApi
                           .AllowAnyHeader();
                 });
             });
-
+            
+            
             // Construa a aplicação
             var app = builder.Build();
 
