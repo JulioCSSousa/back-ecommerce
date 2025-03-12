@@ -18,9 +18,9 @@ public class EfiAuthService
         {
             throw new Exception($"Certificado não encontrado no caminho: {certPath}");
         }
-
+        byte[] certBytes = Convert.FromBase64String(certPath);
         // Carrega o certificado com opções adicionais
-        var cert = new X509Certificate2(certPath, (string?)null, X509KeyStorageFlags.Exportable | X509KeyStorageFlags.MachineKeySet);
+        var cert = new X509Certificate2(certBytes, (string?)null, X509KeyStorageFlags.Exportable | X509KeyStorageFlags.MachineKeySet);
         System.Console.WriteLine(cert);
 
         var handler = new HttpClientHandler();
