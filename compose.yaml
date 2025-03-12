@@ -7,6 +7,8 @@ services:
       - "7069:7069"
     environment:
       - Jwt__JWT_KEY=${JWT_KEY}
+      - ClientId=${ClientId}
+      - ClientSecret=${ClientSecret}
       - DB_HOST=${DB_HOST}  
       - DB_PORT=${DB_PORT}
       - DB_USER=${DB_USER}
@@ -20,10 +22,14 @@ services:
       MYSQL_DATABASE: ${DB}
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}  
+      EFI_CERT_PATH: "/app/lardocear-dotnet/producao-719089-ecommerceapi.p12"
+      EFI_CERT_PASSWORD: "sua_senha"
     ports:
       - "13331:13331"
     volumes:
       - db_data:/var/lib/mysql
+      - /home/ubuntudev/programming/lardocear-dotnet/producao-719089-ecommerceapi.p12:ro
 
 volumes:
   db_data:
+  

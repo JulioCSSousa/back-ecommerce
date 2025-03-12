@@ -12,7 +12,7 @@ public class EfiAuthService
         Env.Load(); // Carregar variáveis de ambiente
 
         // Caminho do certificado P12
-        string certPath = "/home/ubuntudev/programming/lardocear-dotnet/producao-719089-ecommerceapi.p12";
+        string? certPath = Environment.GetEnvironmentVariable("EFI_CERT_PATH");
 
         if (!File.Exists(certPath))
         {
