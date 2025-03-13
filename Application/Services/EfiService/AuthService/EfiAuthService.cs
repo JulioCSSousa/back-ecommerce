@@ -3,6 +3,8 @@ using System.Text.Json;
 using System.Text;
 using DotNetEnv;
 
+using System.Security.Cryptography;
+
 public class EfiAuthService
 {
     private readonly HttpClient _httpClient;
@@ -11,19 +13,35 @@ public class EfiAuthService
     {
         Env.Load(); // Carregar variáveis de ambiente
 
-        // Caminho do certificado P12
-        string? certPath = Environment.GetEnvironmentVariable("CERT_PATH");
+        // Caminhos dos arquivos no Render
+        string? certPath = Environment.GetEnvironmentVariable("CERT_PATH"); // Caminho do .crt
+        string? keyPath = Environment.GetEnvironmentVariable("KEY_PATH");   // Caminho do .key
 
-        if (!File.Exists(certPath))
+        if (string.IsNullOrWhiteSpace(certPath) || string.IsNullOrWhiteSpace(keyPath))
         {
-            throw new Exception($"Certificado não encontrado no caminho: {certPath}");
+            throw new Exception("Caminhos do certificado ou chave privada não definidos nas variáveis de ambiente.");
         }
 
-        // Carrega o certificado com opções adicionais
-        var cert = new X509Certificate2(certPath, "", X509KeyStorageFlags.Exportable | X509KeyStorageFlags.MachineKeySet);
+        if (!File.Exists(certPath) || !File.Exists(keyPath))
+        {
+            throw new Exception("Certificado ou chave privada não encontrados nos caminhos especificados.");
+        }
 
+        // Ler os arquivos .crt e .key
+        string certPem = File.ReadAllText(certPath);
+        string keyPem = File.ReadAllText(keyPath);
+
+        // Criar certificado a partir do PEM
+        using var cert = X509Certificate2.CreateFromPem(certPem);
+        
+        // Criar chave privada separadamente e combiná-la ao certificado
+        using RSA privateKey = RSA.Create();
+        privateKey.ImportFromPem(keyPem);
+        var certWithPrivateKey = cert.CopyWithPrivateKey(privateKey);
+
+        // Criar handler do HttpClient
         var handler = new HttpClientHandler();
-        handler.ClientCertificates.Add(cert);
+        handler.ClientCertificates.Add(certWithPrivateKey);
 
         _httpClient = new HttpClient(handler);
     }
