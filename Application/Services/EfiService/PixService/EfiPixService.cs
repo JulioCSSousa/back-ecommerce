@@ -8,18 +8,13 @@ public class EfiPixService
 {
     private readonly HttpClient _httpClient;
     private readonly string _apiUrl = "https://pix.api.efipay.com.br/v2/cob";
+
     public EfiPixService(string accessToken)
     {
         Env.Load();
 
-        string certificatePath = "/home/ubuntudev/programming/lardocear-dotnet/producao-719089-ecommerceapi.p12";
-
-        if (!File.Exists(certificatePath))
-        {
-            throw new Exception($"Certificate not found at path: {certificatePath}");
-        }
-
-        var certificate = new X509Certificate2(certificatePath, "", X509KeyStorageFlags.Exportable | X509KeyStorageFlags.MachineKeySet);
+        // Carregar o certificado reutilizando a função LoadCertificate
+        var certificate = EfiAuthService.LoadCertificate();
 
         var handler = new HttpClientHandler();
         handler.ClientCertificates.Add(certificate);
@@ -29,25 +24,21 @@ public class EfiPixService
         _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 
-    public async Task<string> CreatePixChargeAsync
-    (
+    public async Task<string> CreatePixChargeAsync(
         string create,
         string value, 
         string pixKey, 
         string? payerRequest,
         string? payerName, 
-        string? payerCpf
-        )
+        string? payerCpf)
     {
         try
         {
             // Definindo o corpo da requisição
             var requestBody = new PixChargeModel
             {
-                
                 chave = pixKey,
                 solicitacaoPagador = payerRequest,
-                
                 devedor = new Devedor
                 {
                     cpf = payerCpf,
@@ -58,7 +49,8 @@ public class EfiPixService
                     criacao = create,
                     expiracao = 3600 // 1 hora de expiração
                 },
-                valor = new Valor{
+                valor = new Valor
+                {
                     original = value
                 },
             };

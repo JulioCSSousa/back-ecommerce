@@ -1,9 +1,12 @@
-using System.Security.Cryptography.X509Certificates;
-using System.Text.Json;
-using System.Text;
-using DotNetEnv;
-
+using System;
+using System.IO;
+using System.Net.Http;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
+using DotNetEnv;
 
 public class EfiAuthService
 {
@@ -13,33 +16,10 @@ public class EfiAuthService
     {
         Env.Load(); // Carregar variáveis de ambiente
 
-        // Caminhos dos arquivos no Render
-        string? certPath = Environment.GetEnvironmentVariable("CERT_PATH"); // Caminho do .crt
-        string? keyPath = Environment.GetEnvironmentVariable("KEY_PATH");   // Caminho do .key
+        // Carregar certificado reutilizando a função LoadCertificate
+        var certWithPrivateKey = LoadCertificate();
 
-        if (string.IsNullOrWhiteSpace(certPath) || string.IsNullOrWhiteSpace(keyPath))
-        {
-            throw new Exception("Caminhos do certificado ou chave privada não definidos nas variáveis de ambiente.");
-        }
-
-        if (!File.Exists(certPath) || !File.Exists(keyPath))
-        {
-            throw new Exception("Certificado ou chave privada não encontrados nos caminhos especificados.");
-        }
-
-        // Ler os arquivos .crt e .key
-        string certPem = File.ReadAllText(certPath);
-        string keyPem = File.ReadAllText(keyPath);
-
-        // Criar certificado a partir do PEM
-        using var cert = X509Certificate2.CreateFromPem(certPem);
-        
-        // Criar chave privada separadamente e combiná-la ao certificado
-        using RSA privateKey = RSA.Create();
-        privateKey.ImportFromPem(keyPem);
-        var certWithPrivateKey = cert.CopyWithPrivateKey(privateKey);
-
-        // Criar handler do HttpClient
+        // Criar handler do HttpClient com o certificado
         var handler = new HttpClientHandler();
         handler.ClientCertificates.Add(certWithPrivateKey);
 
@@ -88,6 +68,39 @@ public class EfiAuthService
         {
             throw new Exception($"Erro na autenticação: {ex.Message}");
         }
+    }
+
+    public static X509Certificate2 LoadCertificate()
+    {
+        string? certPath = Environment.GetEnvironmentVariable("CERT_PATH");
+        string? keyPath = Environment.GetEnvironmentVariable("KEY_PATH");
+
+        if (string.IsNullOrWhiteSpace(certPath) || string.IsNullOrWhiteSpace(keyPath))
+        {
+            throw new Exception("Caminhos do certificado ou chave privada não definidos nas variáveis de ambiente.");
+        }
+
+        if (!File.Exists(certPath) || !File.Exists(keyPath))
+        {
+            throw new Exception("Certificado ou chave privada não encontrados nos caminhos especificados.");
+        }
+
+        // Ler os arquivos .crt e .key
+        string certPem = File.ReadAllText(certPath).Trim();
+        string keyPem = File.ReadAllText(keyPath).Trim();
+
+        if (!certPem.Contains("BEGIN CERTIFICATE") || !keyPem.Contains("BEGIN PRIVATE KEY"))
+        {
+            throw new Exception("O certificado ou a chave privada estão em formato inválido.");
+        }
+
+        // Criar certificado a partir do PEM
+        using var cert = X509Certificate2.CreateFromPem(certPem);
+
+        // Criar chave privada separadamente e combiná-la ao certificado
+        using RSA privateKey = RSA.Create();
+        privateKey.ImportFromPem(keyPem);
+        return cert.CopyWithPrivateKey(privateKey);
     }
 }
 
