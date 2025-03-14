@@ -4,24 +4,16 @@ using System.Text;
 using System.Text.Json;
 using DotNetEnv;
 
-public class EfiPixService
+
+    public class EfiPixService
 {
     private readonly HttpClient _httpClient;
     private readonly string _apiUrl = "https://pix.api.efipay.com.br/v2/cob";
 
     public EfiPixService(string accessToken)
     {
-        Env.Load();
-
-        // Carregar o certificado reutilizando a função LoadCertificate
-        var certificate = EfiAuthService.LoadCertificate();
-
-        var handler = new HttpClientHandler();
-        handler.ClientCertificates.Add(certificate);
-
-        _httpClient = new HttpClient(handler);
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-        _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        // Usando o método reutilizável para criar o HttpClient
+        _httpClient = EfiAuthService.CreateHttpClient(accessToken);
     }
 
     public async Task<string> CreatePixChargeAsync(
@@ -72,4 +64,7 @@ public class EfiPixService
             throw new Exception($"Error creating Pix charge: {ex.Message}");
         }
     }
+
+    
+
 }

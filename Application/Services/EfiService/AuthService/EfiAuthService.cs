@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -101,6 +102,23 @@ public class EfiAuthService
         using RSA privateKey = RSA.Create();
         privateKey.ImportFromPem(keyPem);
         return cert.CopyWithPrivateKey(privateKey);
+    }
+
+    public static HttpClient CreateHttpClient(string accessToken)
+    {
+        Env.Load();
+
+        // Carregar o certificado reutilizando a função LoadCertificate
+        var certificate = LoadCertificate();
+
+        var handler = new HttpClientHandler();
+        handler.ClientCertificates.Add(certificate);
+
+        var httpClient = new HttpClient(handler);
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+        return httpClient;
     }
 }
 
