@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 public class EfiController : ControllerBase
 {
     private readonly EfiAuthService _efiAuthService;
-
-    public EfiController(EfiAuthService efiAuthService, HttpClient httpClient)
+    
+    public EfiController(EfiAuthService efiAuthService)
     {
         _efiAuthService = efiAuthService;
     }

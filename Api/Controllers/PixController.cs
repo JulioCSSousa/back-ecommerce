@@ -1,15 +1,13 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Query;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/pix")]
 public class PixController : ControllerBase
 {
-    private readonly HttpClient _httpClient;
 
     [HttpPost("create-charge")]
     public async Task<IActionResult> CreateCharge([FromBody] PixChargeModel request, string token)

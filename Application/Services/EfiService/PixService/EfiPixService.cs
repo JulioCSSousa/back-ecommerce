@@ -1,8 +1,5 @@
-using System.Net.Http.Headers;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
-using DotNetEnv;
 
 
     public class EfiPixService
@@ -65,6 +62,6 @@ using DotNetEnv;
         }
     }
 
-    
+
 
 }
