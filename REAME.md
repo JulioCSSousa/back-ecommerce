@@ -68,7 +68,8 @@ LocationId = 14
 }
 
 Response {
-"qrcode": "...",
+"qrcode": "00020101021226830014BR.GOV.BCB.PIX2561qrcodespix.sejaefi.com.br/...",
+"imagemQrcode": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOQAAADkCAYAAACIV4iNAAAAAkl...",
 "linkVisualizacao":"https://pix.sejaefi.com.br/cob/pagar/b86b4b4436b84d1a994ba5c686a30fd3"}
 
 ```
